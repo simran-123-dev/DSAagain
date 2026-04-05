@@ -78,51 +78,54 @@ public:
 #include <stack>
 
 using namespace std;
-
 class MinStack {
 private:
-    stack<long long> st; // Use long long to avoid overflow in (2 * val - minVal)
     long long minVal;
+    stack<long long> st;
 
 public:
-    MinStack() {}
+    MinStack() {
+        minVal = 0;  // initialize (safe default)
+    }
     
     void push(int val) {
-        if (st.empty()) {
+        if(st.empty()){
             st.push(val);
             minVal = val;
-        } else {
-            if (val < minVal) {
-                // Encode the value: 2 * new_min - old_min
-                st.push(2LL * val - minVal);
+        }
+        else{
+            if(val < minVal){
+                st.push(2LL * val - minVal);  // corrected formula
                 minVal = val;
-            } else {
+            }
+            else{
                 st.push(val);
             }
         }
     }
     
     void pop() {
-        if (st.empty()) return;
+        if(st.empty()) return;
 
         long long topVal = st.top();
         st.pop();
 
-        // If popped value is less than minVal, it's an encoded value
-        // Recover previous min: old_min = 2 * current_min - encoded_val
-        if (topVal < minVal) {
+        if(topVal < minVal){
             minVal = 2LL * minVal - topVal;
         }
     }
     
     int top() {
-        if (st.top() < minVal) {
-            return (int)minVal; // The encoded value represents the current minVal
+        if(st.empty()) return -1;  // safety
+
+        if(st.top() < minVal){
+            return (int)minVal;
         }
         return (int)st.top();
     }
     
     int getMin() {
+        if(st.empty()) return -1;  // safety
         return (int)minVal;
     }
 };
